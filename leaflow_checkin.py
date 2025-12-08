@@ -203,6 +203,8 @@ class LeaflowAutoCheckin:
             current_url = self.driver.current_url
             if "dashboard" in current_url or "workspaces" in current_url or "login" not in current_url:
                 logger.info(f"登录成功，当前URL: {current_url}")
+                cookie=self.driver.get_cookies()
+                logger.info(f"登录成功，当前cookie: {cookie}")
                 return True
             else:
                 raise Exception("登录后未跳转到正确页面")
@@ -640,3 +642,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
