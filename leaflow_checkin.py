@@ -203,8 +203,7 @@ class LeaflowAutoCheckin:
             current_url = self.driver.current_url
             if "dashboard" in current_url or "workspaces" in current_url or "login" not in current_url:
                 logger.info(f"登录成功，当前URL: {current_url}")
-                cookie=self.driver.get_cookies()
-                logger.info(f"登录成功，当前cookie: {cookie}")
+                
                 return True
             else:
                 raise Exception("登录后未跳转到正确页面")
@@ -386,7 +385,8 @@ class LeaflowAutoCheckin:
         elif checkin_result is True:
             logger.info("已点击立即签到按钮")
             time.sleep(5)  # 等待签到结果
-            
+            # cookie=self.driver.get_cookies()
+            # logger.info(f"登录成功，当前cookie: {cookie}")
             # 获取签到结果
             result_message = self.get_checkin_result()
             return result_message
@@ -419,13 +419,14 @@ class LeaflowAutoCheckin:
                     if element.is_displayed():
                         text = element.text.strip()
                         if text:
+                            logger.info(f"text：{text}")
                             return text
                 except:
                     continue
             
             # 如果没有找到特定元素，检查页面文本
             page_text = self.driver.find_element(By.TAG_NAME, "body").text
-            important_keywords = ["成功", "签到", "获得", "恭喜", "谢谢", "感谢", "完成", "已签到", "连续签到"]
+            important_keywords = ["成功", "签到", "获得", "恭喜", "谢谢", "感谢", "完成", "已签到"] #, "连续签到"]
             
             for keyword in important_keywords:
                 if keyword in page_text:
@@ -455,11 +456,14 @@ class LeaflowAutoCheckin:
             
             # 登录
             if self.login():
-                # 签到
-                result = self.checkin()
-                
                 # 获取余额
                 balance = self.get_balance()
+                # 签到
+                result = self.checkin()
+                if result == "今日已签到":
+                    logger.info(f"今日已签到")
+                else:
+                    result = self.checkin()
                 
                 logger.info(f"签到结果: {result}, 余额: {balance}")
                 return True, result, balance
@@ -642,4 +646,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
